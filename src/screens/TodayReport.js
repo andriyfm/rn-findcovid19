@@ -217,9 +217,33 @@ export const GlobalCaseItem = props => {
  * @param {*} props
  */
 export const GlobalCases = props => {
-  const [data, setData] = useState(DATA_DUMMY);
+  const [dataGlobal, setDataGlobal] = useState(DATA_DUMMY);
+  const [dataIndo, setDataIndo] = useState(DATA_DUMMY);
 
-  const fetchData = async (name, color) => {
+  const fetchDataIndonesia = async () => {
+    const response = await fetch(`https://api.kawalcorona.com/indonesia`);
+    const json = await response.json();
+    const result = json[0];
+    setDataIndo([
+      {
+        label: 'positif',
+        val: parseInt(result.positif.replace(',', ''), 10),
+        color: '#06CAFD',
+      },
+      {
+        label: 'sembuh',
+        val: parseInt(result.sembuh.replace(',', ''), 10),
+        color: '#ECB334',
+      },
+      {
+        label: 'meninggal',
+        val: parseInt(result.meninggal.replace(',', ''), 10),
+        color: '#FF5B4C',
+      },
+    ]);
+  };
+
+  const fetchDataGlobal = async (name, color) => {
     try {
       const res = await fetch(`https://api.kawalcorona.com/${name}`);
       const json = await res.json();
@@ -235,19 +259,20 @@ export const GlobalCases = props => {
 
   const fetchAll = () => {
     Promise.all([
-      fetchData('positif', '#06CAFD'),
-      fetchData('meninggal', '#FF5B4C'),
-      fetchData('sembuh', '#ECB334'),
+      fetchDataGlobal('positif', '#06CAFD'),
+      fetchDataGlobal('meninggal', '#FF5B4C'),
+      fetchDataGlobal('sembuh', '#ECB334'),
     ]).then(res => {
-      setData(res);
+      setDataGlobal(res);
     });
   };
 
   useEffect(() => {
     fetchAll();
+    fetchDataIndonesia();
   }, []);
 
-  const pieData = data
+  const pieData = dataIndo
     .filter(el => el.val > 0)
     .map((el, index) => {
       return {
@@ -266,7 +291,7 @@ export const GlobalCases = props => {
         outerRadius={80}
       />
       <View style={styles.globalCases__chartDetail}>
-        {data.map((item, i) => {
+        {dataIndo.map((item, i) => {
           return (
             <GlobalCaseItem
               key={i.toString()}
