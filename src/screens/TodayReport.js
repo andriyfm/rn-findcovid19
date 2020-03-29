@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, View, ScrollView} from 'react-native';
-import {Text, Block} from 'galio-framework';
+import {Text} from 'galio-framework';
+import {PieChart} from 'react-native-svg-charts';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginVertical: 30,
+    marginVertical: 15,
     marginHorizontal: -5,
   },
 
@@ -63,6 +64,43 @@ const styles = StyleSheet.create({
   itemCard__extra: {
     fontSize: 12,
     marginLeft: 4,
+  },
+
+  globalCases: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 0,
+    paddingBottom: 0,
+  },
+  globalCases__pieChart: {
+    flex: 1,
+    alignSelf: 'flex-start',
+    height: 200,
+  },
+  globalCases__chartDetail: {
+    flex: 1,
+    paddingLeft: 30,
+  },
+  globalCases__item: {
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  globalCases__lilbar: {
+    borderRadius: 2,
+    backgroundColor: 'black',
+    marginTop: 6,
+    marginRight: 6,
+    width: 20,
+    height: 6,
+  },
+  globalCases__label: {
+    textTransform: 'capitalize',
+  },
+  globalCases__value: {
+    fontWeight: 'bold',
   },
 });
 
@@ -122,6 +160,87 @@ export const ResultItemCard = props => {
 };
 
 /**
+ * GLOBAL CASE ITEM
+ * @param {*} props
+ */
+export const GlobalCaseItem = props => {
+  const label = props.label ? props.label : 'Label';
+  const amount = props.amount ? props.amount : '0';
+
+  return (
+    <View style={styles.globalCases__item}>
+      <View
+        style={[styles.globalCases__lilbar, {backgroundColor: props.color}]}
+      />
+      <View>
+        <Text style={styles.globalCases__label}>{label}</Text>
+        <Text style={styles.globalCases__value}>{amount}</Text>
+      </View>
+    </View>
+  );
+};
+
+/**
+ * GLOBAL CASES
+ * @param {*} props
+ */
+export const GlobalCases = props => {
+  const data = [
+    {
+      label: 'total cases',
+      val: 100,
+      color: '#2456C9',
+    },
+    {
+      label: 'confirmed',
+      val: 50,
+      color: '#06CAFD',
+    },
+    {
+      label: 'deaths',
+      val: 20,
+      color: '#FF5B4C',
+    },
+    {
+      label: 'recovered',
+      val: 50,
+      color: '#ECB334',
+    },
+  ];
+
+  const pieData = data
+    .filter(value => value.val > 0)
+    .map((value, index) => ({
+      value: value.val,
+      svg: {fill: value.color},
+      key: `pie-${index}`,
+    }));
+
+  return (
+    <View style={styles.globalCases}>
+      <PieChart
+        style={styles.globalCases__pieChart}
+        data={pieData}
+        innerRadius={60}
+        outerRadius={80}
+      />
+      <View style={styles.globalCases__chartDetail}>
+        {data.map((item, i) => {
+          return (
+            <GlobalCaseItem
+              key={i.toString()}
+              color={item.color}
+              label={item.label}
+              amount={item.val}
+            />
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
+/**
  * TODAY'S REPORT
  */
 export default props => {
@@ -129,6 +248,7 @@ export default props => {
     <ScrollView>
       <View style={styles.container}>
         <Header />
+        <GlobalCases />
         <ResultList />
       </View>
     </ScrollView>
