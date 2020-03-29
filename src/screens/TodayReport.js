@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, ScrollView} from 'react-native';
 import {Text} from 'galio-framework';
 import {PieChart} from 'react-native-svg-charts';
+import NumberFormat from 'react-number-format';
 
 const styles = StyleSheet.create({
   container: {
@@ -104,6 +105,29 @@ const styles = StyleSheet.create({
   },
 });
 
+const DATA_DUMMY = [
+  {
+    label: 'total cases',
+    val: 100,
+    color: '#2456C9',
+  },
+  {
+    label: 'confirmed',
+    val: 50,
+    color: '#06CAFD',
+  },
+  {
+    label: 'deaths',
+    val: 20,
+    color: '#FF5B4C',
+  },
+  {
+    label: 'recovered',
+    val: 50,
+    color: '#ECB334',
+  },
+];
+
 /**
  * HEADER
  * @param {*} props
@@ -174,7 +198,15 @@ export const GlobalCaseItem = props => {
       />
       <View>
         <Text style={styles.globalCases__label}>{label}</Text>
-        <Text style={styles.globalCases__value}>{amount}</Text>
+        <NumberFormat
+          value={amount}
+          displayType={'text'}
+          thousandSeparator={'.'}
+          decimalSeparator={','}
+          renderText={value => (
+            <Text style={styles.globalCases__value}>{value}</Text>
+          )}
+        />
       </View>
     </View>
   );
@@ -185,36 +217,45 @@ export const GlobalCaseItem = props => {
  * @param {*} props
  */
 export const GlobalCases = props => {
-  const data = [
-    {
-      label: 'total cases',
-      val: 100,
-      color: '#2456C9',
-    },
-    {
-      label: 'confirmed',
-      val: 50,
-      color: '#06CAFD',
-    },
-    {
-      label: 'deaths',
-      val: 20,
-      color: '#FF5B4C',
-    },
-    {
-      label: 'recovered',
-      val: 50,
-      color: '#ECB334',
-    },
-  ];
+  const [data, setData] = useState(DATA_DUMMY);
+
+  const fetchData = async (name, color) => {
+    try {
+      const res = await fetch(`https://api.kawalcorona.com/${name}`);
+      const json = await res.json();
+      return Promise.resolve({
+        val: parseInt(json.value.replace(',', ''), 10),
+        label: name,
+        color: color,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAll = () => {
+    Promise.all([
+      fetchData('positif', '#06CAFD'),
+      fetchData('meninggal', '#FF5B4C'),
+      fetchData('sembuh', '#ECB334'),
+    ]).then(res => {
+      setData(res);
+    });
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
   const pieData = data
-    .filter(value => value.val > 0)
-    .map((value, index) => ({
-      value: value.val,
-      svg: {fill: value.color},
-      key: `pie-${index}`,
-    }));
+    .filter(el => el.val > 0)
+    .map((el, index) => {
+      return {
+        value: el.val,
+        svg: {fill: el.color},
+        key: `pie-${index}`,
+      };
+    });
 
   return (
     <View style={styles.globalCases}>
