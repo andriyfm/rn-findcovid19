@@ -5,41 +5,55 @@ import NumberFormat from 'react-number-format';
 
 const styles = StyleSheet.create({
   globalCases: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
-    width: '90%',
-    marginTop: 20,
+    // width: '90%',
+    flex: 1,
     marginBottom: 0,
     paddingBottom: 0,
   },
   globalCases__pieChart: {
     flex: 2,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     height: 200,
+    // borderWidth: 1,
+    // borderColor: 'red',
   },
   globalCases__chartDetail: {
-    flex: 1,
+    // flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // borderWidth: 1,
+    // borderColor: 'red',
   },
   globalCases__item: {
-    marginBottom: 10,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    width: '30%',
+    marginHorizontal: 10,
+    backgroundColor: '#E5EBF9',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 4,
   },
   globalCases__lilbar: {
     borderRadius: 2,
     backgroundColor: 'black',
-    marginTop: 6,
-    marginRight: 6,
-    width: 20,
-    height: 6,
+    marginTop: 2,
+    marginRight: 10,
+    width: 10,
+    height: 24,
   },
   globalCases__label: {
-    textTransform: 'capitalize',
+    fontSize: 10,
+    textTransform: 'uppercase',
+    color: '#2C3B5E',
   },
   globalCases__value: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#2C3B5E',
   },
 });
 
@@ -92,7 +106,7 @@ export default function GlobalCases({dataIndo}) {
       <PieChart
         style={styles.globalCases__pieChart}
         data={pieData}
-        innerRadius={60}
+        innerRadius={50}
         outerRadius={80}
       />
       <View style={styles.globalCases__chartDetail}>
