@@ -3,14 +3,14 @@ import {StyleSheet, View, Text} from 'react-native';
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   header__title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#646464',
+    color: '#1D2A50',
     textTransform: 'capitalize',
   },
   header__date: {
