@@ -6,15 +6,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginVertical: 15,
     marginHorizontal: -5,
+    backgroundColor: '#003CBF',
+    padding: 15,
   },
 
   itemCard: {
     width: '47%',
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#F0F2F3',
+    backgroundColor: '#265AD2',
     borderRadius: 3,
     padding: 10,
     margin: 5,
@@ -29,23 +28,25 @@ const styles = StyleSheet.create({
   },
   itemCard__lilBox: {
     marginRight: 5,
-    width: 10,
-    height: 10,
-    backgroundColor: '#003CBF',
+    width: 8,
+    height: 8,
+    backgroundColor: '#FDDA2D',
     borderRadius: 2,
   },
   itemCard__title: {
     fontSize: 12,
+    color: 'white',
     textTransform: 'capitalize',
-    color: '#646464',
   },
   itemCard__amount: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: 'white',
   },
   itemCard__extra: {
-    fontSize: 12,
     marginLeft: 4,
+    fontSize: 10,
+    color: 'white',
   },
 });
 
@@ -85,7 +86,7 @@ export default function ResultList({provinceData}) {
         provinceData.map(item => (
           <ResultItemCard
             key={item.id}
-            color="#CDCCFF"
+            color="#FDDA2D"
             title={item.name}
             amount={item.total}
           />

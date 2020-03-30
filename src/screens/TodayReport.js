@@ -145,8 +145,8 @@ export default props => {
       <View style={styles.container}>
         <Header title="today's report" />
         <GlobalCases dataIndo={dataIndo} />
-        <ResultList provinceData={provinceData} />
       </View>
+      <ResultList provinceData={provinceData} />
     </ScrollView>
   );
 };
