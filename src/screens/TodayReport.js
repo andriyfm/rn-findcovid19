@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
 
   itemCard: {
     width: '47%',
+    backgroundColor: 'white',
     borderWidth: 1,
     borderColor: '#F0F2F3',
     borderRadius: 3,
@@ -71,18 +72,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    alignSelf: 'center',
+    width: '90%',
     marginTop: 20,
     marginBottom: 0,
     paddingBottom: 0,
   },
   globalCases__pieChart: {
-    flex: 1,
+    flex: 2,
     alignSelf: 'flex-start',
     height: 200,
   },
   globalCases__chartDetail: {
     flex: 1,
-    paddingLeft: 30,
   },
   globalCases__item: {
     marginBottom: 10,
@@ -103,12 +105,28 @@ const styles = StyleSheet.create({
   globalCases__value: {
     fontWeight: 'bold',
   },
+
+  noData: {
+    alignContent: 'center',
+    alignItems: 'center',
+    padding: 30,
+    flex: 1,
+  },
+  noData__title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  noData__desc: {
+    fontSize: 13,
+    color: 'gray',
+  },
 });
 
 const DATA_DUMMY = [
   {
     label: 'total cases',
-    val: 100,
+    val: 55,
     color: '#2456C9',
   },
   {
@@ -118,7 +136,7 @@ const DATA_DUMMY = [
   },
   {
     label: 'deaths',
-    val: 20,
+    val: 50,
     color: '#FF5B4C',
   },
   {
@@ -147,13 +165,18 @@ export const Header = props => {
  * RESULT LIST
  * @param {*} props
  */
-export const ResultList = props => {
+export const ResultList = ({provinceData}) => {
   return (
     <View style={styles.resultList}>
-      <ResultItemCard color="#FF5B4C" title="recovered" amount="4000" />
-      <ResultItemCard color="#0134A2" title="deaths" amount="4000" />
-      <ResultItemCard color="#ECB334" title="confirmed" amount="4000" />
-      <ResultItemCard color="#CDCCFF" title="total cases" amount="4000" />
+      {provinceData &&
+        provinceData.map(item => (
+          <ResultItemCard
+            key={item.id}
+            color="#CDCCFF"
+            title={item.name}
+            amount={item.total}
+          />
+        ))}
     </View>
   );
 };
@@ -177,7 +200,7 @@ export const ResultItemCard = props => {
       </View>
       <View style={styles.itemCard__body}>
         <Text style={styles.itemCard__amount}>{amount}</Text>
-        <Text style={styles.itemCard__extra}>(+{extra})</Text>
+        <Text style={styles.itemCard__extra}>orang</Text>
       </View>
     </View>
   );
@@ -216,12 +239,87 @@ export const GlobalCaseItem = props => {
  * GLOBAL CASES
  * @param {*} props
  */
-export const GlobalCases = props => {
+export const GlobalCases = ({dataIndo}) => {
+  const pieData = dataIndo
+    .filter(el => el.val > 0)
+    .map((el, index) => {
+      return {
+        value: el.val,
+        svg: {fill: el.color},
+        key: `pie-${index}`,
+      };
+    });
+
+  return (
+    <View style={styles.globalCases}>
+      <PieChart
+        style={styles.globalCases__pieChart}
+        data={pieData}
+        innerRadius={60}
+        outerRadius={80}
+      />
+      <View style={styles.globalCases__chartDetail}>
+        {dataIndo.map((item, i) => {
+          return (
+            <GlobalCaseItem
+              key={i.toString()}
+              color={item.color}
+              label={item.label}
+              amount={item.val}
+            />
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
+/**
+ * NO DATA
+ * @param {*} props
+ */
+export const NoData = props => {
+  return (
+    <View style={styles.noData}>
+      <Text style={styles.noData__title}>No data</Text>
+      <Text style={styles.noData__desc}>
+        Please check your internet connection
+      </Text>
+    </View>
+  );
+};
+
+/**
+ * TODAY'S REPORT
+ */
+export default props => {
+  const [provinceData, setProvinceData] = useState();
   const [dataGlobal, setDataGlobal] = useState(DATA_DUMMY);
   const [dataIndo, setDataIndo] = useState(DATA_DUMMY);
 
+  const fetchProvinceData = async () => {
+    const res = await fetch('https://api.kawalcorona.com/indonesia/provinsi');
+    const json = await res.json();
+    const mappedData = json.map(el => {
+      const item = el.attributes;
+      return {
+        id: item.FID,
+        name:
+          item.Provinsi.length > 20
+            ? `${item.Provinsi.slice(0, 22)}...`
+            : item.Provinsi,
+        positif: item.Kasus_Posi,
+        sembuh: item.Kasus_Semb,
+        meninggal: item.Kasus_Meni,
+        total: item.Kasus_Posi + item.Kasus_Semb + item.Kasus_Meni,
+      };
+    });
+
+    setProvinceData(mappedData);
+  };
+
   const fetchDataIndonesia = async () => {
-    const response = await fetch(`https://api.kawalcorona.com/indonesia`);
+    const response = await fetch('https://api.kawalcorona.com/indonesia');
     const json = await response.json();
     const result = json[0];
     setDataIndo([
@@ -270,52 +368,23 @@ export const GlobalCases = props => {
   useEffect(() => {
     fetchAll();
     fetchDataIndonesia();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const pieData = dataIndo
-    .filter(el => el.val > 0)
-    .map((el, index) => {
-      return {
-        value: el.val,
-        svg: {fill: el.color},
-        key: `pie-${index}`,
-      };
-    });
+  useEffect(() => {
+    fetchProvinceData();
+  }, []);
 
-  return (
-    <View style={styles.globalCases}>
-      <PieChart
-        style={styles.globalCases__pieChart}
-        data={pieData}
-        innerRadius={60}
-        outerRadius={80}
-      />
-      <View style={styles.globalCases__chartDetail}>
-        {dataIndo.map((item, i) => {
-          return (
-            <GlobalCaseItem
-              key={i.toString()}
-              color={item.color}
-              label={item.label}
-              amount={item.val}
-            />
-          );
-        })}
-      </View>
-    </View>
-  );
-};
+  if (!provinceData) {
+    return <NoData />;
+  }
 
-/**
- * TODAY'S REPORT
- */
-export default props => {
   return (
     <ScrollView>
       <View style={styles.container}>
         <Header />
-        <GlobalCases />
-        <ResultList />
+        <GlobalCases dataIndo={dataIndo} />
+        <ResultList provinceData={provinceData} />
       </View>
     </ScrollView>
   );
