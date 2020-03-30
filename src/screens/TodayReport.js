@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
-import {Text} from 'galio-framework';
+import {StyleSheet, View, ScrollView, Text} from 'react-native';
 import {PieChart} from 'react-native-svg-charts';
 import NumberFormat from 'react-number-format';
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    backgroundColor: 'white',
   },
   header: {
     flexDirection: 'row',
