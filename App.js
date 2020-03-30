@@ -4,12 +4,12 @@
  */
 
 import React from 'react';
-import HelloWorld from './src/screens/HelloWorld';
+import TodayReport from './src/screens/TodayReport';
 
 const App = () => {
   return (
     <>
-      <HelloWorld />
+      <TodayReport />
     </>
   );
 };
